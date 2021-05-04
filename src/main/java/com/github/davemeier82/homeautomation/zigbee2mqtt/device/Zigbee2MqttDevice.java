@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.davemeier82.homeautomation.zigbee2mqtt;
+package com.github.davemeier82.homeautomation.zigbee2mqtt.device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davemeier82.homeautomation.core.device.mqtt.MqttSubscriber;
-import com.github.davemeier82.homeautomation.core.device.property.DeviceProperty;
+import com.github.davemeier82.homeautomation.core.device.property.*;
+import com.github.davemeier82.homeautomation.core.event.EventFactory;
+import com.github.davemeier82.homeautomation.core.event.EventPublisher;
+import com.github.davemeier82.homeautomation.zigbee2mqtt.Zigbee2MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +42,20 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
   private final String baseTopic;
   private String displayName;
   private final ObjectMapper objectMapper;
+  private final DefaultBatteryStateSensor batteryStateSensor;
+  private final DefaultIlluminanceSensor illuminanceSensor;
+  private final DefaultTemperatureSensor temperatureSensor;
+  private final DefaultHumiditySensor humiditySensor;
 
-  public Zigbee2MqttDevice(String id, String displayName, ObjectMapper objectMapper) {
+  public Zigbee2MqttDevice(String id, String displayName, ObjectMapper objectMapper, EventPublisher eventPublisher, EventFactory eventFactory) {
     this.id = id;
     baseTopic = MQTT_TOPIC + "/" + id;
     this.displayName = displayName;
     this.objectMapper = objectMapper;
+    batteryStateSensor = new DefaultBatteryStateSensor(0, this, eventPublisher, eventFactory);
+    illuminanceSensor = new DefaultIlluminanceSensor(1, this, eventPublisher, eventFactory);
+    temperatureSensor = new DefaultTemperatureSensor(2, this, eventPublisher, eventFactory);
+    humiditySensor = new DefaultHumiditySensor(3, this, eventPublisher, eventFactory);
   }
 
   @Override
@@ -69,7 +80,7 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
 
   @Override
   public List<? extends DeviceProperty> getDeviceProperties() {
-    return List.of();
+    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor);
   }
 
   @Override
@@ -84,6 +95,18 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
       log.debug("{}: {}", topic, message);
       try {
         Zigbee2MqttMessage zigbee2MqttMessage = objectMapper.readValue(message, Zigbee2MqttMessage.class);
+        if (zigbee2MqttMessage.getBattery() != null) {
+          batteryStateSensor.setBatteryLevel(zigbee2MqttMessage.getBattery());
+        }
+        if (zigbee2MqttMessage.getIlluminanceLux() != null) {
+          illuminanceSensor.setIlluminanceInLux(zigbee2MqttMessage.getIlluminanceLux());
+        }
+        if (zigbee2MqttMessage.getTemperature() != null) {
+          temperatureSensor.setTemperatureInDegree(zigbee2MqttMessage.getTemperature());
+        }
+        if (zigbee2MqttMessage.getHumidity() != null) {
+          humiditySensor.setRelativeHumidityInPercent(zigbee2MqttMessage.getHumidity());
+        }
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);
       }

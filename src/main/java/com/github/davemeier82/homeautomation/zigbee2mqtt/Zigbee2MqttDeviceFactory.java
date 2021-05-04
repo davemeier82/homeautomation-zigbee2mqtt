@@ -23,6 +23,7 @@ import com.github.davemeier82.homeautomation.core.device.mqtt.MqttSubscriber;
 import com.github.davemeier82.homeautomation.core.event.EventFactory;
 import com.github.davemeier82.homeautomation.core.event.EventPublisher;
 import com.github.davemeier82.homeautomation.core.mqtt.MqttClient;
+import com.github.davemeier82.homeautomation.zigbee2mqtt.device.Zigbee2MqttDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
 
   @Override
   public MqttSubscriber createDevice(String type, String id, String displayName) {
-    Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper);
+    Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory);
     log.debug("creating Zigbee2Mqtt device with id {} ({})", id, displayName);
     mqttClient.subscribe(device.getTopic(), device::processMessage);
     eventPublisher.publishEvent(eventFactory.createNewDeviceCreatedEvent(device));
