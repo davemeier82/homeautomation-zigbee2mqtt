@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +47,7 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
   private final DefaultIlluminanceSensor illuminanceSensor;
   private final DefaultTemperatureSensor temperatureSensor;
   private final DefaultHumiditySensor humiditySensor;
+  private final DefaultMotionSensor motionSensor;
 
   public Zigbee2MqttDevice(String id, String displayName, ObjectMapper objectMapper, EventPublisher eventPublisher, EventFactory eventFactory) {
     this.id = id;
@@ -56,6 +58,7 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
     illuminanceSensor = new DefaultIlluminanceSensor(1, this, eventPublisher, eventFactory);
     temperatureSensor = new DefaultTemperatureSensor(2, this, eventPublisher, eventFactory);
     humiditySensor = new DefaultHumiditySensor(3, this, eventPublisher, eventFactory);
+    motionSensor = new DefaultMotionSensor(4, this, eventPublisher, eventFactory);
   }
 
   @Override
@@ -80,7 +83,7 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
 
   @Override
   public List<? extends DeviceProperty> getDeviceProperties() {
-    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor);
+    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor, motionSensor);
   }
 
   @Override
@@ -106,6 +109,9 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
         }
         if (zigbee2MqttMessage.getHumidity() != null) {
           humiditySensor.setRelativeHumidityInPercent(zigbee2MqttMessage.getHumidity());
+        }
+        if (zigbee2MqttMessage.getOccupancy()) {
+          motionSensor.setLastMotionDetected(ZonedDateTime.now());
         }
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);
