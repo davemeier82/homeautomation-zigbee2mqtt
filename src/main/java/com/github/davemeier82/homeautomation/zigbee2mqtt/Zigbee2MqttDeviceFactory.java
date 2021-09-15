@@ -27,6 +27,7 @@ import com.github.davemeier82.homeautomation.zigbee2mqtt.device.Zigbee2MqttDevic
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -59,13 +60,16 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
   }
 
   @Override
-  public MqttSubscriber createDevice(String type, String id, String displayName) {
-    Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory);
-    log.debug("creating Zigbee2Mqtt device with id {} ({})", id, displayName);
-    mqttClient.subscribe(device.getTopic(), device::processMessage);
-    eventPublisher.publishEvent(eventFactory.createNewDeviceCreatedEvent(device));
+  public MqttSubscriber createDevice(String type, String id, String displayName, Map<String, String> parameters) {
+    if (supportsDeviceType(type)) {
+      Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory);
+      log.debug("creating Zigbee2Mqtt device with id {} ({})", id, displayName);
+      mqttClient.subscribe(device.getTopic(), device::processMessage);
+      eventPublisher.publishEvent(eventFactory.createNewDeviceCreatedEvent(device));
 
-    return device;
+      return device;
+    }
+    throw new IllegalArgumentException("device type '" + type + "' not supported");
   }
 
   @Override
@@ -89,7 +93,7 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
   @Override
   public Optional<MqttSubscriber> createMqttSubscriber(DeviceId deviceId) {
     try {
-      return Optional.of(createDevice(deviceId.getType(), deviceId.getId(), deviceId.toString()));
+      return Optional.of(createDevice(deviceId.getType(), deviceId.getId(), deviceId.toString(), Map.of()));
     } catch (IllegalArgumentException e) {
       log.debug("unknown device with id: {}", deviceId);
       return Optional.empty();
