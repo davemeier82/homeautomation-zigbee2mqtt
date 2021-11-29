@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davemeier82.homeautomation.core.device.DeviceId;
 import com.github.davemeier82.homeautomation.core.device.mqtt.MqttDeviceFactory;
 import com.github.davemeier82.homeautomation.core.device.mqtt.MqttSubscriber;
-import com.github.davemeier82.homeautomation.core.event.EventFactory;
+import com.github.davemeier82.homeautomation.core.event.factory.EventFactory;
 import com.github.davemeier82.homeautomation.core.event.EventPublisher;
 import com.github.davemeier82.homeautomation.core.mqtt.MqttClient;
 import com.github.davemeier82.homeautomation.zigbee2mqtt.device.Zigbee2MqttDevice;
@@ -93,7 +93,7 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
   @Override
   public Optional<MqttSubscriber> createMqttSubscriber(DeviceId deviceId) {
     try {
-      return Optional.of(createDevice(deviceId.getType(), deviceId.getId(), deviceId.toString(), Map.of()));
+      return Optional.of(createDevice(deviceId.type(), deviceId.id(), deviceId.toString(), Map.of()));
     } catch (IllegalArgumentException e) {
       log.debug("unknown device with id: {}", deviceId);
       return Optional.empty();
