@@ -18,11 +18,11 @@ package com.github.davemeier82.homeautomation.zigbee2mqtt.device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.davemeier82.homeautomation.core.device.mqtt.MqttSubscriber;
-import com.github.davemeier82.homeautomation.core.device.property.*;
+import com.github.davemeier82.homeautomation.core.device.mqtt.DefaultMqttSubscriber;
+import com.github.davemeier82.homeautomation.core.device.property.DeviceProperty;
 import com.github.davemeier82.homeautomation.core.device.property.defaults.*;
-import com.github.davemeier82.homeautomation.core.event.factory.EventFactory;
 import com.github.davemeier82.homeautomation.core.event.EventPublisher;
+import com.github.davemeier82.homeautomation.core.event.factory.EventFactory;
 import com.github.davemeier82.homeautomation.zigbee2mqtt.Zigbee2MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +31,18 @@ import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class Zigbee2MqttDevice implements MqttSubscriber {
+public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
   private static final Logger log = LoggerFactory.getLogger(Zigbee2MqttDevice.class);
   public static final String MQTT_TOPIC = "zigbee2mqtt";
   public static final String TYPE = "zigbee2mqtt";
 
   private final String id;
   private final String baseTopic;
-  private String displayName;
   private final ObjectMapper objectMapper;
   private final DefaultBatteryStateSensor batteryStateSensor;
   private final DefaultIlluminanceSensor illuminanceSensor;
@@ -50,10 +50,16 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
   private final DefaultHumiditySensor humiditySensor;
   private final DefaultMotionSensor motionSensor;
 
-  public Zigbee2MqttDevice(String id, String displayName, ObjectMapper objectMapper, EventPublisher eventPublisher, EventFactory eventFactory) {
+  public Zigbee2MqttDevice(String id,
+                           String displayName,
+                           ObjectMapper objectMapper,
+                           EventPublisher eventPublisher,
+                           EventFactory eventFactory,
+                           Map<String, String> customIdentifiers
+  ) {
+    super(displayName, customIdentifiers);
     this.id = id;
     baseTopic = MQTT_TOPIC + "/" + id;
-    this.displayName = displayName;
     this.objectMapper = objectMapper;
     batteryStateSensor = new DefaultBatteryStateSensor(0, this, eventPublisher, eventFactory);
     illuminanceSensor = new DefaultIlluminanceSensor(1, this, eventPublisher, eventFactory);
@@ -70,16 +76,6 @@ public class Zigbee2MqttDevice implements MqttSubscriber {
   @Override
   public String getId() {
     return id;
-  }
-
-  @Override
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  @Override
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
   }
 
   @Override

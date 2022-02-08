@@ -20,8 +20,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.davemeier82.homeautomation.core.device.DeviceId;
 import com.github.davemeier82.homeautomation.core.device.mqtt.MqttDeviceFactory;
 import com.github.davemeier82.homeautomation.core.device.mqtt.MqttSubscriber;
-import com.github.davemeier82.homeautomation.core.event.factory.EventFactory;
 import com.github.davemeier82.homeautomation.core.event.EventPublisher;
+import com.github.davemeier82.homeautomation.core.event.factory.EventFactory;
 import com.github.davemeier82.homeautomation.core.mqtt.MqttClient;
 import com.github.davemeier82.homeautomation.zigbee2mqtt.device.Zigbee2MqttDevice;
 import org.slf4j.Logger;
@@ -60,9 +60,14 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
   }
 
   @Override
-  public MqttSubscriber createDevice(String type, String id, String displayName, Map<String, String> parameters) {
+  public MqttSubscriber createDevice(String type,
+                                     String id,
+                                     String displayName,
+                                     Map<String, String> parameters,
+                                     Map<String, String> customIdentifiers
+  ) {
     if (supportsDeviceType(type)) {
-      Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory);
+      Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory, customIdentifiers);
       log.debug("creating Zigbee2Mqtt device with id {} ({})", id, displayName);
       mqttClient.subscribe(device.getTopic(), device::processMessage);
       eventPublisher.publishEvent(eventFactory.createNewDeviceCreatedEvent(device));
@@ -93,7 +98,7 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
   @Override
   public Optional<MqttSubscriber> createMqttSubscriber(DeviceId deviceId) {
     try {
-      return Optional.of(createDevice(deviceId.type(), deviceId.id(), deviceId.toString(), Map.of()));
+      return Optional.of(createDevice(deviceId.type(), deviceId.id(), deviceId.toString(), Map.of(), Map.of()));
     } catch (IllegalArgumentException e) {
       log.debug("unknown device with id: {}", deviceId);
       return Optional.empty();
