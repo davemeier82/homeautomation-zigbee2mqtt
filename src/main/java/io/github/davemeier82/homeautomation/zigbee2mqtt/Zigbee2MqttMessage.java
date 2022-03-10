@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.davemeier82.homeautomation.zigbee2mqtt;
+package io.github.davemeier82.homeautomation.zigbee2mqtt;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

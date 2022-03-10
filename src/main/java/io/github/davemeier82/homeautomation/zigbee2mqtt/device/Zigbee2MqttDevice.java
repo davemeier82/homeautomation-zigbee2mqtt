@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.davemeier82.homeautomation.zigbee2mqtt.device;
+package io.github.davemeier82.homeautomation.zigbee2mqtt.device;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.davemeier82.homeautomation.core.device.mqtt.DefaultMqttSubscriber;
-import com.github.davemeier82.homeautomation.core.device.property.DeviceProperty;
-import com.github.davemeier82.homeautomation.core.device.property.defaults.*;
-import com.github.davemeier82.homeautomation.core.event.EventPublisher;
-import com.github.davemeier82.homeautomation.core.event.factory.EventFactory;
-import com.github.davemeier82.homeautomation.zigbee2mqtt.Zigbee2MqttMessage;
+import io.github.davemeier82.homeautomation.core.device.mqtt.DefaultMqttSubscriber;
+import io.github.davemeier82.homeautomation.core.device.property.DeviceProperty;
+import io.github.davemeier82.homeautomation.core.device.property.defaults.*;
+import io.github.davemeier82.homeautomation.core.event.EventPublisher;
+import io.github.davemeier82.homeautomation.core.event.factory.EventFactory;
+import io.github.davemeier82.homeautomation.zigbee2mqtt.Zigbee2MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
