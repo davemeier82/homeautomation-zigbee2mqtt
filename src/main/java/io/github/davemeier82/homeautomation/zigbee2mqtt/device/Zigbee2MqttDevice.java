@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.davemeier82.homeautomation.core.device.mqtt.DefaultMqttSubscriber;
 import io.github.davemeier82.homeautomation.core.device.property.DeviceProperty;
 import io.github.davemeier82.homeautomation.core.device.property.defaults.*;
+import io.github.davemeier82.homeautomation.core.event.DataWithTimestamp;
 import io.github.davemeier82.homeautomation.core.event.EventPublisher;
 import io.github.davemeier82.homeautomation.core.event.factory.EventFactory;
 import io.github.davemeier82.homeautomation.zigbee2mqtt.Zigbee2MqttMessage;
@@ -107,9 +108,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
         if (zigbee2MqttMessage.getHumidity() != null) {
           humiditySensor.setRelativeHumidityInPercent(zigbee2MqttMessage.getHumidity());
         }
-        if (zigbee2MqttMessage.getOccupancy()) {
-          motionSensor.setLastMotionDetected(ZonedDateTime.now());
-        }
+        motionSensor.setMotionDetected(new DataWithTimestamp<>(ZonedDateTime.now(), zigbee2MqttMessage.getOccupancy()));
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);
       }
