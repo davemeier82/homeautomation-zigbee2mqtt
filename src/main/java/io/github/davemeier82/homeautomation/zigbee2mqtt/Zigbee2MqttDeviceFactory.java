@@ -31,6 +31,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Factory for Zigbee2Mqtt devices (https://www.zigbee2mqtt.io/)
+ *
+ * @author David Meier
+ * @since 0.1.0
+ */
 public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
   private static final Logger log = LoggerFactory.getLogger(Zigbee2MqttDeviceFactory.class);
   private final EventPublisher eventPublisher;
@@ -38,6 +44,14 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
   private final MqttClient mqttClient;
   private final ObjectMapper objectMapper;
 
+  /**
+   * Constructor.
+   *
+   * @param eventPublisher the event publisher
+   * @param eventFactory   the event factory
+   * @param mqttClient     the MQTT client
+   * @param objectMapper   the object mapper
+   */
   public Zigbee2MqttDeviceFactory(EventPublisher eventPublisher,
                                   EventFactory eventFactory,
                                   MqttClient mqttClient,
@@ -70,7 +84,6 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
       Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory, customIdentifiers);
       log.debug("creating Zigbee2Mqtt device with id {} ({})", id, displayName);
       mqttClient.subscribe(device.getTopic(), device::processMessage);
-      eventPublisher.publishEvent(eventFactory.createNewDeviceCreatedEvent(device));
 
       return device;
     }

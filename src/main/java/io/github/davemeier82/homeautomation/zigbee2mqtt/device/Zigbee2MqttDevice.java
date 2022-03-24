@@ -37,6 +37,12 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Device for Zigbee2Mqtt devices (https://www.zigbee2mqtt.io/)
+ *
+ * @author David Meier
+ * @since 0.1.0
+ */
 public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
   private static final Logger log = LoggerFactory.getLogger(Zigbee2MqttDevice.class);
   public static final String MQTT_TOPIC = "zigbee2mqtt";
@@ -51,6 +57,16 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
   private final DefaultHumiditySensor humiditySensor;
   private final DefaultMotionSensor motionSensor;
 
+  /**
+   * Constructor.
+   *
+   * @param id                the id
+   * @param displayName       the display name
+   * @param objectMapper      the object mapper to map the MQTT payload
+   * @param eventPublisher    the event publisher
+   * @param eventFactory      the event factory
+   * @param customIdentifiers optional custom identifiers
+   */
   public Zigbee2MqttDevice(String id,
                            String displayName,
                            ObjectMapper objectMapper,
