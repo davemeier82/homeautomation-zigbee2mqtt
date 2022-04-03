@@ -65,12 +65,12 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
 
   @Override
   public boolean supportsDeviceType(String type) {
-    return type.equals(Zigbee2MqttDevice.TYPE);
+    return type.equalsIgnoreCase(Zigbee2MqttDevice.TYPE);
   }
 
   @Override
   public Set<String> getSupportedDeviceTypes() {
-    return Set.of(Zigbee2MqttDevice.TYPE);
+    return Set.of(Zigbee2MqttDevice.TYPE, Zigbee2MqttDevice.TYPE.toUpperCase());
   }
 
   @Override
@@ -81,7 +81,7 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
                                      Map<String, String> customIdentifiers
   ) {
     if (supportsDeviceType(type)) {
-      Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory, customIdentifiers);
+      Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory, mqttClient, customIdentifiers);
       log.debug("creating Zigbee2Mqtt device with id {} ({})", id, displayName);
       mqttClient.subscribe(device.getTopic(), device::processMessage);
 
@@ -113,7 +113,7 @@ public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
     try {
       return Optional.of(createDevice(deviceId.type(), deviceId.id(), deviceId.toString(), Map.of(), Map.of()));
     } catch (IllegalArgumentException e) {
-      log.debug("unknown device with id: {}", deviceId);
+      log.debug("unknown device with id: {}", deviceId, e);
       return Optional.empty();
     }
   }

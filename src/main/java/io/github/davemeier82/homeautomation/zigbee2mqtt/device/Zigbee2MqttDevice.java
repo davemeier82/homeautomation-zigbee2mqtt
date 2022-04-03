@@ -24,7 +24,9 @@ import io.github.davemeier82.homeautomation.core.device.property.defaults.*;
 import io.github.davemeier82.homeautomation.core.event.DataWithTimestamp;
 import io.github.davemeier82.homeautomation.core.event.EventPublisher;
 import io.github.davemeier82.homeautomation.core.event.factory.EventFactory;
+import io.github.davemeier82.homeautomation.core.mqtt.MqttClient;
 import io.github.davemeier82.homeautomation.zigbee2mqtt.Zigbee2MqttMessage;
+import io.github.davemeier82.homeautomation.zigbee2mqtt.device.property.Zigbee2MqttRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +58,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
   private final DefaultTemperatureSensor temperatureSensor;
   private final DefaultHumiditySensor humiditySensor;
   private final DefaultMotionSensor motionSensor;
+  private final Zigbee2MqttRelay relay;
 
   /**
    * Constructor.
@@ -72,6 +75,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
                            ObjectMapper objectMapper,
                            EventPublisher eventPublisher,
                            EventFactory eventFactory,
+                           MqttClient mqttClient,
                            Map<String, String> customIdentifiers
   ) {
     super(displayName, customIdentifiers);
@@ -83,6 +87,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
     temperatureSensor = new DefaultTemperatureSensor(2, this, eventPublisher, eventFactory);
     humiditySensor = new DefaultHumiditySensor(3, this, eventPublisher, eventFactory);
     motionSensor = new DefaultMotionSensor(4, this, eventPublisher, eventFactory);
+    relay = new Zigbee2MqttRelay(5, this, baseTopic, eventPublisher, eventFactory, mqttClient);
   }
 
   @Override
@@ -97,7 +102,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
 
   @Override
   public List<? extends DeviceProperty> getDeviceProperties() {
-    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor, motionSensor);
+    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor, motionSensor, relay);
   }
 
   @Override
@@ -124,7 +129,12 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
         if (zigbee2MqttMessage.getHumidity() != null) {
           humiditySensor.setRelativeHumidityInPercent(zigbee2MqttMessage.getHumidity());
         }
-        motionSensor.setMotionDetected(new DataWithTimestamp<>(ZonedDateTime.now(), zigbee2MqttMessage.getOccupancy()));
+        if (zigbee2MqttMessage.getState() != null) {
+          relay.setRelayStateTo(zigbee2MqttMessage.getState().equalsIgnoreCase("ON"));
+        }
+        if (zigbee2MqttMessage.getOccupancy() != null) {
+          motionSensor.setMotionDetected(new DataWithTimestamp<>(ZonedDateTime.now(), zigbee2MqttMessage.getOccupancy()));
+        }
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);
       }
