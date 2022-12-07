@@ -59,6 +59,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
   private final DefaultHumiditySensor humiditySensor;
   private final DefaultMotionSensor motionSensor;
   private final Zigbee2MqttRelay relay;
+  private final DefaultWindowSensor windowSensor;
 
   /**
    * Constructor.
@@ -88,6 +89,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
     humiditySensor = new DefaultHumiditySensor(3, this, eventPublisher, eventFactory);
     motionSensor = new DefaultMotionSensor(4, this, eventPublisher, eventFactory);
     relay = new Zigbee2MqttRelay(5, this, baseTopic, eventPublisher, eventFactory, mqttClient);
+    windowSensor = new DefaultWindowSensor(6, this, eventPublisher, eventFactory);
   }
 
   @Override
@@ -134,6 +136,9 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
         }
         if (zigbee2MqttMessage.getOccupancy() != null) {
           motionSensor.setMotionDetected(new DataWithTimestamp<>(ZonedDateTime.now(), zigbee2MqttMessage.getOccupancy()));
+        }
+        if (zigbee2MqttMessage.getContact() != null) {
+          windowSensor.setIsOpen(!zigbee2MqttMessage.getContact());
         }
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);
