@@ -104,7 +104,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
 
   @Override
   public List<? extends DeviceProperty> getDeviceProperties() {
-    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor, motionSensor, relay);
+    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor, motionSensor, relay, windowSensor);
   }
 
   @Override
