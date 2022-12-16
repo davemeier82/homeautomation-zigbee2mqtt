@@ -40,7 +40,7 @@ import java.util.Optional;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- * Device for Zigbee2Mqtt devices (https://www.zigbee2mqtt.io/)
+ * Device for Zigbee2Mqtt devices (<a href="https://www.zigbee2mqtt.io/">Zigbee2Mqtt</a>)
  *
  * @author David Meier
  * @since 0.1.0
@@ -89,7 +89,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
     humiditySensor = new DefaultHumiditySensor(3, this, eventPublisher, eventFactory);
     motionSensor = new DefaultMotionSensor(4, this, eventPublisher, eventFactory);
     relay = new Zigbee2MqttRelay(5, this, baseTopic, eventPublisher, eventFactory, mqttClient);
-    windowSensor = new DefaultWindowSensor(6, this, eventPublisher, eventFactory);
+    windowSensor = new DefaultWindowSensor(6, this, false, eventPublisher, eventFactory);
   }
 
   @Override
