@@ -26,6 +26,7 @@ import io.github.davemeier82.homeautomation.core.event.EventPublisher;
 import io.github.davemeier82.homeautomation.core.event.factory.EventFactory;
 import io.github.davemeier82.homeautomation.core.mqtt.MqttClient;
 import io.github.davemeier82.homeautomation.zigbee2mqtt.Zigbee2MqttMessage;
+import io.github.davemeier82.homeautomation.zigbee2mqtt.device.property.Zigbee2MqttAlarm;
 import io.github.davemeier82.homeautomation.zigbee2mqtt.device.property.Zigbee2MqttRelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,11 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Comparator.comparingLong;
 
 /**
  * Device for Zigbee2Mqtt devices (<a href="https://www.zigbee2mqtt.io/">Zigbee2Mqtt</a>)
@@ -60,6 +64,11 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
   private final DefaultMotionSensor motionSensor;
   private final Zigbee2MqttRelay relay;
   private final DefaultWindowSensor windowSensor;
+  private final DefaultSmokeSensor smokeSensor;
+  private final DefaultCo2Sensor co2Sensor;
+  private final Zigbee2MqttAlarm alarm;
+
+  private Set<DeviceProperty> deviceProperties = ConcurrentHashMap.newKeySet();
 
   /**
    * Constructor.
@@ -90,6 +99,9 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
     motionSensor = new DefaultMotionSensor(4, this, eventPublisher, eventFactory);
     relay = new Zigbee2MqttRelay(5, this, baseTopic, eventPublisher, eventFactory, mqttClient);
     windowSensor = new DefaultWindowSensor(6, this, false, eventPublisher, eventFactory);
+    smokeSensor = new DefaultSmokeSensor(7, this, eventPublisher, eventFactory);
+    co2Sensor = new DefaultCo2Sensor(8, this, eventPublisher, eventFactory);
+    alarm = new Zigbee2MqttAlarm(9, this, baseTopic, eventPublisher, eventFactory, mqttClient);
   }
 
   @Override
@@ -104,7 +116,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
 
   @Override
   public List<? extends DeviceProperty> getDeviceProperties() {
-    return List.of(batteryStateSensor, illuminanceSensor, temperatureSensor, humiditySensor, motionSensor, relay, windowSensor);
+    return deviceProperties.stream().sorted(comparingLong(DeviceProperty::getId)).toList();
   }
 
   @Override
@@ -120,25 +132,48 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
       try {
         Zigbee2MqttMessage zigbee2MqttMessage = objectMapper.readValue(message, Zigbee2MqttMessage.class);
         if (zigbee2MqttMessage.getBattery() != null) {
+          deviceProperties.add(batteryStateSensor);
           batteryStateSensor.setBatteryLevel(zigbee2MqttMessage.getBattery());
         }
         if (zigbee2MqttMessage.getIlluminanceLux() != null) {
+          deviceProperties.add(illuminanceSensor);
           illuminanceSensor.setIlluminanceInLux(zigbee2MqttMessage.getIlluminanceLux());
         }
         if (zigbee2MqttMessage.getTemperature() != null) {
+          deviceProperties.add(temperatureSensor);
           temperatureSensor.setTemperatureInDegree(zigbee2MqttMessage.getTemperature());
         }
         if (zigbee2MqttMessage.getHumidity() != null) {
+          deviceProperties.add(humiditySensor);
           humiditySensor.setRelativeHumidityInPercent(zigbee2MqttMessage.getHumidity());
         }
         if (zigbee2MqttMessage.getState() != null) {
+          deviceProperties.add(relay);
           relay.setRelayStateTo(zigbee2MqttMessage.getState().equalsIgnoreCase("ON"));
         }
         if (zigbee2MqttMessage.getOccupancy() != null) {
+          deviceProperties.add(motionSensor);
           motionSensor.setMotionDetected(new DataWithTimestamp<>(ZonedDateTime.now(), zigbee2MqttMessage.getOccupancy()));
         }
         if (zigbee2MqttMessage.getContact() != null) {
+          deviceProperties.add(windowSensor);
           windowSensor.setIsOpen(!zigbee2MqttMessage.getContact());
+        }
+        if (zigbee2MqttMessage.getCo2() != null) {
+          deviceProperties.add(co2Sensor);
+          co2Sensor.setCo2LevelInPpm(zigbee2MqttMessage.getCo2());
+        }
+        if (zigbee2MqttMessage.getCo2() != null) {
+          deviceProperties.add(co2Sensor);
+          co2Sensor.setCo2LevelInPpm(zigbee2MqttMessage.getCo2());
+        }
+        if (zigbee2MqttMessage.getSmoke() != null) {
+          deviceProperties.add(smokeSensor);
+          smokeSensor.setSmokeDetected(zigbee2MqttMessage.getSmoke());
+        }
+        if (zigbee2MqttMessage.getAlarm() != null) {
+          deviceProperties.add(alarm);
+          alarm.setAlarmState(zigbee2MqttMessage.getAlarm());
         }
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);

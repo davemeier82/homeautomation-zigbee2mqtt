@@ -43,6 +43,8 @@ public class Zigbee2MqttMessage {
   private Boolean lowBattery;
   private Boolean tamper;
   private Boolean smoke;
+  private String alarm; // stop, pre_alarm, fire, burglar
+  private Integer co2; // ppm
 
   public Integer getBattery() {
     return battery;
@@ -170,5 +172,21 @@ public class Zigbee2MqttMessage {
 
   public void setSmoke(Boolean smoke) {
     this.smoke = smoke;
+  }
+
+  public String getAlarm() {
+    return alarm;
+  }
+
+  public void setAlarm(String alarm) {
+    this.alarm = alarm;
+  }
+
+  public Integer getCo2() {
+    return co2;
+  }
+
+  public void setCo2(Integer co2) {
+    this.co2 = co2;
   }
 }
