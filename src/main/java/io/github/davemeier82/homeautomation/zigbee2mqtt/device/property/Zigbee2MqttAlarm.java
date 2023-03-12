@@ -43,7 +43,7 @@ public class Zigbee2MqttAlarm extends AbstractAlarm {
   public void setAlarmState(String zigbeeState) {
     AlarmState alarmState = switch (zigbeeState.toLowerCase()) {
       case "stop" -> AlarmState.OFF;
-      case "pre_alarm" -> AlarmState.PRE_ALARM;
+      case "pre-alarm" -> AlarmState.PRE_ALARM;
       case "fire" -> AlarmState.FIRE;
       case "burglar" -> AlarmState.BURGLAR;
       default -> throw new IllegalStateException("alarm state " + zigbeeState + " not supported");
