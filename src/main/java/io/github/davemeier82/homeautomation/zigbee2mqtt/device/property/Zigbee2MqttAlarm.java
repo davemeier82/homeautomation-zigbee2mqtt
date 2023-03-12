@@ -59,6 +59,6 @@ public class Zigbee2MqttAlarm extends AbstractAlarm {
       case FIRE -> "fire";
       case BURGLAR -> "burglar";
     };
-    mqttClient.publish(topic + "/set", "{ \"state\": \"" + zigbeeState + "\" } ");
+    mqttClient.publish(topic + "/set", "{ \"alarm\": \"" + zigbeeState + "\" } ");
   }
 }

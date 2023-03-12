@@ -43,7 +43,8 @@ public class Zigbee2MqttMessage {
   private Boolean lowBattery;
   private Boolean tamper;
   private Boolean smoke;
-  private String alarm; // stop, pre_alarm, fire, burglar
+  @JsonProperty("siren_state")
+  private String sirenState; // stop, pre_alarm, fire, burglar
   private Integer co2; // ppm
 
   public Integer getBattery() {
@@ -174,12 +175,12 @@ public class Zigbee2MqttMessage {
     this.smoke = smoke;
   }
 
-  public String getAlarm() {
-    return alarm;
+  public String getSirenState() {
+    return sirenState;
   }
 
-  public void setAlarm(String alarm) {
-    this.alarm = alarm;
+  public void setSirenState(String sirenState) {
+    this.sirenState = sirenState;
   }
 
   public Integer getCo2() {

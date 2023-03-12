@@ -171,9 +171,9 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
           deviceProperties.add(smokeSensor);
           smokeSensor.setSmokeDetected(zigbee2MqttMessage.getSmoke());
         }
-        if (zigbee2MqttMessage.getAlarm() != null) {
+        if (zigbee2MqttMessage.getSirenState() != null) {
           deviceProperties.add(alarm);
-          alarm.setAlarmState(zigbee2MqttMessage.getAlarm());
+          alarm.setAlarmState(zigbee2MqttMessage.getSirenState());
         }
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);
