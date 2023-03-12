@@ -44,7 +44,7 @@ public class Zigbee2MqttMessage {
   private Boolean tamper;
   private Boolean smoke;
   @JsonProperty("siren_state")
-  private String sirenState; // stop, pre_alarm, fire, burglar
+  private String sirenState; // stop, pre-alarm, fire, burglar
   private Integer co2; // ppm
 
   public Integer getBattery() {
