@@ -46,6 +46,7 @@ public class Zigbee2MqttAlarm extends AbstractAlarm {
       case "pre-alarm" -> AlarmState.PRE_ALARM;
       case "fire" -> AlarmState.FIRE;
       case "burglar" -> AlarmState.BURGLAR;
+      case "silenced" -> AlarmState.SILENCED;
       default -> throw new IllegalStateException("alarm state " + zigbeeState + " not supported");
     };
     setAlarmState(alarmState);
@@ -58,6 +59,7 @@ public class Zigbee2MqttAlarm extends AbstractAlarm {
       case PRE_ALARM -> "pre_alarm";
       case FIRE -> "fire";
       case BURGLAR -> "burglar";
+      case SILENCED -> "silenced";
     };
     mqttClient.publish(topic + "/set", "{ \"alarm\": \"" + zigbeeState + "\" } ");
   }
