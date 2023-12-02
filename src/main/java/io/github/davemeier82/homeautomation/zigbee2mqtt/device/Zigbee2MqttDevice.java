@@ -68,7 +68,7 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
   private final DefaultCo2Sensor co2Sensor;
   private final Zigbee2MqttAlarm alarm;
 
-  private Set<DeviceProperty> deviceProperties = ConcurrentHashMap.newKeySet();
+  private final Set<DeviceProperty> deviceProperties = ConcurrentHashMap.newKeySet();
 
   /**
    * Constructor.
