@@ -92,16 +92,17 @@ public class Zigbee2MqttDevice extends DefaultMqttSubscriber {
     this.id = id;
     baseTopic = MQTT_TOPIC + "/" + id;
     this.objectMapper = objectMapper;
-    batteryStateSensor = new DefaultBatteryStateSensor(0, this, eventPublisher, eventFactory);
-    illuminanceSensor = new DefaultIlluminanceSensor(1, this, eventPublisher, eventFactory);
-    temperatureSensor = new DefaultTemperatureSensor(2, this, eventPublisher, eventFactory);
-    humiditySensor = new DefaultHumiditySensor(3, this, eventPublisher, eventFactory);
-    motionSensor = new DefaultMotionSensor(4, this, eventPublisher, eventFactory);
-    relay = new Zigbee2MqttRelay(5, this, baseTopic, eventPublisher, eventFactory, mqttClient);
-    windowSensor = new DefaultWindowSensor(6, this, false, eventPublisher, eventFactory);
-    smokeSensor = new DefaultSmokeSensor(7, this, eventPublisher, eventFactory);
-    co2Sensor = new DefaultCo2Sensor(8, this, eventPublisher, eventFactory);
-    alarm = new Zigbee2MqttAlarm(9, this, baseTopic, eventPublisher, eventFactory, mqttClient);
+    int i = 0;
+    batteryStateSensor = new DefaultBatteryStateSensor(i++, this, eventPublisher, eventFactory);
+    illuminanceSensor = new DefaultIlluminanceSensor(i++, this, eventPublisher, eventFactory);
+    temperatureSensor = new DefaultTemperatureSensor(i++, this, eventPublisher, eventFactory);
+    humiditySensor = new DefaultHumiditySensor(i++, this, eventPublisher, eventFactory);
+    motionSensor = new DefaultMotionSensor(i++, this, eventPublisher, eventFactory);
+    relay = new Zigbee2MqttRelay(i++, this, baseTopic, eventPublisher, eventFactory, mqttClient);
+    windowSensor = new DefaultWindowSensor(i++, this, false, eventPublisher, eventFactory);
+    smokeSensor = new DefaultSmokeSensor(i++, this, eventPublisher, eventFactory);
+    co2Sensor = new DefaultCo2Sensor(i++, this, eventPublisher, eventFactory);
+    alarm = new Zigbee2MqttAlarm(i, this, baseTopic, eventPublisher, eventFactory, mqttClient);
   }
 
   @Override

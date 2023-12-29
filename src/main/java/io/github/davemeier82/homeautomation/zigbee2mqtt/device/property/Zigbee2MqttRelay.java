@@ -43,7 +43,7 @@ public class Zigbee2MqttRelay extends AbstractRelay {
    * @param eventFactory   the event factory
    * @param mqttClient     the MQTT client
    */
-  public Zigbee2MqttRelay(long id,
+  public Zigbee2MqttRelay(int id,
                           Device device,
                           String topic,
                           EventPublisher eventPublisher,

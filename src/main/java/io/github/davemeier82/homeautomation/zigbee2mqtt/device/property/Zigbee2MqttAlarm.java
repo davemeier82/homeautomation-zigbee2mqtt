@@ -28,7 +28,7 @@ public class Zigbee2MqttAlarm extends AbstractAlarm {
   private final String topic;
   private final MqttClient mqttClient;
 
-  public Zigbee2MqttAlarm(long id,
+  public Zigbee2MqttAlarm(int id,
                           Device device,
                           String topic,
                           EventPublisher eventPublisher,
