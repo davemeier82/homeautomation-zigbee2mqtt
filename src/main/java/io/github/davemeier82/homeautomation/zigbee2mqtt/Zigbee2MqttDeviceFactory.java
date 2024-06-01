@@ -16,14 +16,11 @@
 
 package io.github.davemeier82.homeautomation.zigbee2mqtt;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.davemeier82.homeautomation.core.device.DeviceId;
-import io.github.davemeier82.homeautomation.core.device.mqtt.MqttDeviceFactory;
-import io.github.davemeier82.homeautomation.core.device.mqtt.MqttSubscriber;
-import io.github.davemeier82.homeautomation.core.event.EventPublisher;
-import io.github.davemeier82.homeautomation.core.event.factory.EventFactory;
-import io.github.davemeier82.homeautomation.core.mqtt.MqttClient;
+import io.github.davemeier82.homeautomation.core.device.Device;
+import io.github.davemeier82.homeautomation.core.device.DeviceFactory;
+import io.github.davemeier82.homeautomation.core.device.DeviceType;
 import io.github.davemeier82.homeautomation.zigbee2mqtt.device.Zigbee2MqttDevice;
+import io.github.davemeier82.homeautomation.zigbee2mqtt.device.Zigbee2MqttDeviceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,90 +28,28 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Factory for Zigbee2Mqtt devices (https://www.zigbee2mqtt.io/)
- *
- * @author David Meier
- * @since 0.1.0
- */
-public class Zigbee2MqttDeviceFactory implements MqttDeviceFactory {
+import static java.util.Arrays.stream;
+
+public class Zigbee2MqttDeviceFactory implements DeviceFactory {
   private static final Logger log = LoggerFactory.getLogger(Zigbee2MqttDeviceFactory.class);
-  private final EventPublisher eventPublisher;
-  private final EventFactory eventFactory;
-  private final MqttClient mqttClient;
-  private final ObjectMapper objectMapper;
 
-  /**
-   * Constructor.
-   *
-   * @param eventPublisher the event publisher
-   * @param eventFactory   the event factory
-   * @param mqttClient     the MQTT client
-   * @param objectMapper   the object mapper
-   */
-  public Zigbee2MqttDeviceFactory(EventPublisher eventPublisher,
-                                  EventFactory eventFactory,
-                                  MqttClient mqttClient,
-                                  ObjectMapper objectMapper
-  ) {
-    this.eventPublisher = eventPublisher;
-    this.eventFactory = eventFactory;
-    this.mqttClient = mqttClient;
-    this.objectMapper = objectMapper;
+  @Override
+  public boolean supportsDeviceType(DeviceType type) {
+    return stream(Zigbee2MqttDeviceType.values()).anyMatch(t -> t == type);
   }
 
   @Override
-  public boolean supportsDeviceType(String type) {
-    return type.equalsIgnoreCase(Zigbee2MqttDevice.TYPE);
+  public Set<? extends DeviceType> getSupportedDeviceTypes() {
+    return Set.of(Zigbee2MqttDeviceType.values());
   }
 
   @Override
-  public Set<String> getSupportedDeviceTypes() {
-    return Set.of(Zigbee2MqttDevice.TYPE, Zigbee2MqttDevice.TYPE.toUpperCase());
-  }
-
-  @Override
-  public MqttSubscriber createDevice(String type,
-                                     String id,
-                                     String displayName,
-                                     Map<String, String> parameters,
-                                     Map<String, String> customIdentifiers
-  ) {
+  public Optional<Device> createDevice(DeviceType type, String id, String displayName, Map<String, String> parameters, Map<String, String> customIdentifiers) {
     if (supportsDeviceType(type)) {
-      Zigbee2MqttDevice device = new Zigbee2MqttDevice(id, displayName, objectMapper, eventPublisher, eventFactory, mqttClient, customIdentifiers);
       log.debug("creating Zigbee2Mqtt device with id {} ({})", id, displayName);
-      mqttClient.subscribe(device.getTopic(), device::processMessage);
-
-      return device;
+      return Optional.of(new Zigbee2MqttDevice(id, displayName, customIdentifiers));
     }
-    throw new IllegalArgumentException("device type '" + type + "' not supported");
+    return Optional.empty();
   }
 
-  @Override
-  public String getRootTopic() {
-    return Zigbee2MqttDevice.MQTT_TOPIC + "/";
-  }
-
-  @Override
-  public Optional<DeviceId> getDeviceId(String topic) {
-    String[] parts = topic.split("/");
-    if (parts.length < 2) {
-      return Optional.empty();
-    }
-    String id = parts[1];
-    if (id.equals("bridge")) {
-      return Optional.empty();
-    }
-    return Optional.of(new DeviceId(id, Zigbee2MqttDevice.TYPE));
-  }
-
-  @Override
-  public Optional<MqttSubscriber> createMqttSubscriber(DeviceId deviceId) {
-    try {
-      return Optional.of(createDevice(deviceId.type(), deviceId.id(), deviceId.toString(), Map.of(), Map.of()));
-    } catch (IllegalArgumentException e) {
-      log.debug("unknown device with id: {}", deviceId, e);
-      return Optional.empty();
-    }
-  }
 }
