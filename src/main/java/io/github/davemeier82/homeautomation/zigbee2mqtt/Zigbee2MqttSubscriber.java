@@ -34,6 +34,7 @@ import io.github.davemeier82.homeautomation.core.updater.RelayStateValueUpdateSe
 import io.github.davemeier82.homeautomation.core.updater.SmokeStateValueUpdateService;
 import io.github.davemeier82.homeautomation.core.updater.TemperatureValueUpdateService;
 import io.github.davemeier82.homeautomation.core.updater.WindowStateValueUpdateService;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +98,7 @@ public class Zigbee2MqttSubscriber implements MqttSubscriber {
     return MQTT_TOPIC + "/#";
   }
 
+  @Transactional
   @Override
   public void processMessage(String topic, Optional<ByteBuffer> payload) {
     String[] topicParts = topic.split("/");
@@ -116,35 +118,35 @@ public class Zigbee2MqttSubscriber implements MqttSubscriber {
       try {
         Zigbee2MqttMessage zigbee2MqttMessage = objectMapper.readValue(message, Zigbee2MqttMessage.class);
         if (zigbee2MqttMessage.getBattery() != null) {
-          batteryLevelUpdateService.setValue(zigbee2MqttMessage.getBattery(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "battery"), "Battery Level");
+          batteryLevelUpdateService.setValue(zigbee2MqttMessage.getBattery(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "battery"), deviceId + ": Battery Level");
         }
         if (zigbee2MqttMessage.getIlluminanceLux() != null) {
-          illuminanceValueUpdateService.setValue(zigbee2MqttMessage.getIlluminanceLux(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "illumination"), "Illumination");
+          illuminanceValueUpdateService.setValue(zigbee2MqttMessage.getIlluminanceLux(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "illumination"), deviceId + ": Illumination");
         }
         if (zigbee2MqttMessage.getTemperature() != null) {
-          temperatureValueUpdateService.setValue(zigbee2MqttMessage.getTemperature().floatValue(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "temperature"), "Temperature");
+          temperatureValueUpdateService.setValue(zigbee2MqttMessage.getTemperature().floatValue(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "temperature"), deviceId + ": Temperature");
         }
         if (zigbee2MqttMessage.getHumidity() != null) {
-          humidityValueUpdateService.setValue(zigbee2MqttMessage.getHumidity().floatValue(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "humidity"), "Humidity");
+          humidityValueUpdateService.setValue(zigbee2MqttMessage.getHumidity().floatValue(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "humidity"), deviceId + ": Humidity");
         }
         if (zigbee2MqttMessage.getState() != null) {
           boolean isOn = zigbee2MqttMessage.getState().equalsIgnoreCase("ON");
-          relayStateValueUpdateService.setValue(isOn, OffsetDateTime.now(), new DevicePropertyId(deviceId, "relay"), "Relay");
+          relayStateValueUpdateService.setValue(isOn, OffsetDateTime.now(), new DevicePropertyId(deviceId, "relay"), deviceId + ": Relay");
         }
         if (zigbee2MqttMessage.getOccupancy() != null) {
-          motionStateValueUpdateService.setValue(zigbee2MqttMessage.getOccupancy(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "motion"), "Motion State");
+          motionStateValueUpdateService.setValue(zigbee2MqttMessage.getOccupancy(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "motion"), deviceId + ": Motion State");
         }
         if (zigbee2MqttMessage.getContact() != null) {
-          windowStateValueUpdateService.setValue(!zigbee2MqttMessage.getContact(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "window"), "Window State");
+          windowStateValueUpdateService.setValue(!zigbee2MqttMessage.getContact(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "window"), deviceId + ": Window State");
         }
         if (zigbee2MqttMessage.getCo2() != null) {
-          co2ValueUpdateService.setValue(zigbee2MqttMessage.getCo2(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "co2"), "Co2");
+          co2ValueUpdateService.setValue(zigbee2MqttMessage.getCo2(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "co2"), deviceId + ": Co2");
         }
         if (zigbee2MqttMessage.getSmoke() != null) {
-          smokeStateValueUpdateService.setValue(zigbee2MqttMessage.getSmoke(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "smoke"), "Smoke State");
+          smokeStateValueUpdateService.setValue(zigbee2MqttMessage.getSmoke(), OffsetDateTime.now(), new DevicePropertyId(deviceId, "smoke"), deviceId + ": Smoke State");
         }
         if (zigbee2MqttMessage.getSirenState() != null) {
-          alarmStateValueUpdateService.setValue(toAlarmState(zigbee2MqttMessage.getSirenState()), OffsetDateTime.now(), new DevicePropertyId(deviceId, "alarm"), "Alarm State");
+          alarmStateValueUpdateService.setValue(toAlarmState(zigbee2MqttMessage.getSirenState()), OffsetDateTime.now(), new DevicePropertyId(deviceId, "alarm"), deviceId + ": Alarm State");
         }
       } catch (JsonProcessingException e) {
         throw new UncheckedIOException(e);
