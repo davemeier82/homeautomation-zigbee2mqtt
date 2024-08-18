@@ -56,15 +56,14 @@
     </issueManagement>
 
     <properties>
-        <homeautomation-core.version>0.6.0</homeautomation-core.version>
-        <homeautomation-spring-core.version>0.5.2-SNAPSHOT</homeautomation-spring-core.version>
+        <homeautomation-spring-core.version>0.6.0</homeautomation-spring-core.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.github.davemeier82.homeautomation</groupId>
-            <artifactId>homeautomation-core</artifactId>
-            <version>${homeautomation-core.version}</version>
+            <artifactId>homeautomation-spring-core</artifactId>
+            <version>${homeautomation-spring-core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -81,11 +80,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.github.davemeier82.homeautomation</groupId>
-            <artifactId>homeautomation-spring-core</artifactId>
-            <version>${homeautomation-spring-core.version}</version>
         </dependency>
     </dependencies>
 
