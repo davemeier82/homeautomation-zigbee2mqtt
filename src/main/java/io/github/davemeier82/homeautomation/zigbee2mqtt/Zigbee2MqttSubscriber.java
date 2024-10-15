@@ -34,7 +34,6 @@ import io.github.davemeier82.homeautomation.core.updater.RelayStateValueUpdateSe
 import io.github.davemeier82.homeautomation.core.updater.SmokeStateValueUpdateService;
 import io.github.davemeier82.homeautomation.core.updater.TemperatureValueUpdateService;
 import io.github.davemeier82.homeautomation.core.updater.WindowStateValueUpdateService;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,7 +97,6 @@ public class Zigbee2MqttSubscriber implements MqttSubscriber {
     return MQTT_TOPIC + "/#";
   }
 
-  @Transactional
   @Override
   public void processMessage(String topic, Optional<ByteBuffer> payload) {
     String[] topicParts = topic.split("/");
