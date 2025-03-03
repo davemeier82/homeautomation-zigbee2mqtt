@@ -20,7 +20,7 @@
     <parent>
         <groupId>io.github.davemeier82.homeautomation</groupId>
         <artifactId>homeautomation-parent</artifactId>
-        <version>0.6.3</version>
+        <version>0.6.4</version>
     </parent>
 
     <artifactId>homeautomation-zigbee2mqtt</artifactId>
@@ -48,7 +48,6 @@
         <developerConnection>scm:git:ssh://git@github.com/davemeier82/homeautomation-zigbee2mqtt.git
         </developerConnection>
         <url>https://github.com/davemeier82/homeautomation-zigbee2mqtt</url>
-        <tag>homeautomation-zigbee2mqtt-0.1.5</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
@@ -56,7 +55,7 @@
     </issueManagement>
 
     <properties>
-        <homeautomation-spring-core.version>0.6.3</homeautomation-spring-core.version>
+        <homeautomation-spring-core.version>0.6.4</homeautomation-spring-core.version>
     </properties>
 
     <dependencies>
