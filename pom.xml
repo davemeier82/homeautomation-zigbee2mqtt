@@ -24,7 +24,7 @@
     </parent>
 
     <artifactId>homeautomation-zigbee2mqtt</artifactId>
-    <version>0.6.5-SNAPSHOT</version>
+    <version>0.6.5</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>HomeAutomation zigbee2mqtt.cloud Devices</description>
@@ -48,7 +48,7 @@
         <developerConnection>scm:git:ssh://git@github.com/davemeier82/homeautomation-zigbee2mqtt.git
         </developerConnection>
         <url>https://github.com/davemeier82/homeautomation-zigbee2mqtt</url>
-      <tag>HEAD</tag>
+      <tag>homeautomation-zigbee2mqtt-0.6.5</tag>
   </scm>
     <issueManagement>
         <system>GitHub</system>
